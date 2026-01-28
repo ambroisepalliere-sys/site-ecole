@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photos de l'École</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+  <header class="bg-blue-600 text-white p-4 text-center shadow">
+    <h1 class="text-2xl font-bold">📸 Photos de Notre École</h1>
+    <p class="text-sm">Chaque élève peut partager ses photos</p>
+  </header>
+
+  <main class="p-4 max-w-6xl mx-auto">
+
+    <!-- Sélecteur de classe -->
+    <div class="bg-white p-4 rounded-xl shadow mb-6">
+      <h2 class="font-semibold mb-2">Choisis ta classe</h2>
+      <select id="classSelect" class="w-full border rounded p-2">
+        <option value="">-- Sélectionne --</option>
+
+        <!-- Secondes -->
+        <optgroup label="Seconde">">
+          <option>2nd1</option><option>2nd2</option><option>2nd3</option>
+          <option>2nd4</option><option>2nd5</option><option>2nd6</option>
+          <option>2nd7</option><option>2nd8</option><option>2nd9</option>
+          <option>2nd9bis</option>
+        </optgroup>
+
+        <!-- Premières -->
+        <optgroup label="Première">">
+          <option>1G1</option><option>1G2</option><option>1G3</option>
+          <option>1G4</option><option>1G5</option><option>1G6</option>
+          <option>1G7</option><option>1G8</option><option>1G9</option>
+          <option>1G STI2D</option>
+        </optgroup>
+
+        <!-- Terminales -->
+
+        <optgroup label="Terminale">">
+          <option>TG1</option><option>TG2</option><option>TG3</option>
+          <option>TG4</option><option>TG5</option><option>TG6</option>
+          <option>TG7</option><option>TG8</option><option>TG9</option>
+          <option>TG STI2D</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <!-- Upload -->
+    <div class="bg-white p-4 rounded-xl shadow mb-6">
+      <h2 class="font-semibold mb-2">Ajouter une photo</h2>
+
+      <input type="file" id="photoInput" accept="image/*" class="mb-2">
+      
+
+      <button id="uploadBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Publier
+      </button>
+    </div>
+
+    <!-- Galerie -->
+    <div>
+      <h2 class="text-xl font-bold mb-3">Galerie</h2>
+      <div id="gallery" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+    </div>
+
+  </main>
+
+  <footer class="text-center text-sm text-gray-500 p-4">
+    Site créé pour l'école ❤️ | Stockage local
+  </footer>
+
+  <script>
+
+    const classSelect = document.getElementById("classSelect");
+    const photoInput = document.getElementById("photoInput");
+    
+    const uploadBtn = document.getElementById("uploadBtn");
+    const gallery = document.getElementById("gallery");
+
+    function loadPhotos() {
+      gallery.innerHTML = "";
+      const selectedClass = classSelect.value;
+
+      if (!selectedClass) return;
+
+      const data = JSON.parse(localStorage.getItem("photos") || "[]");
+
+      const filtered = data.filter(p => p.class === selectedClass);
+
+      filtered.forEach(photo => {
+        const div = document.createElement("div");
+        div.className = "bg-white rounded-xl shadow p-2";
+
+        div.innerHTML = `
+          <img src="${photo.image}" class="rounded mb-2 object-cover w-full h-40">
+          
+          <p class="text-xs text-gray-500">${photo.class}</p>
+        `;
+
+        gallery.appendChild(div);
+      });
+    }
+
+
+    uploadBtn.addEventListener("click", () => {
+      const selectedClass = classSelect.value;
+      const file = photoInput.files[0];
+      const name = "";
+
+      if (!selectedClass || !file) {
+        alert("Remplis tous les champs !");
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = function() {
+        const data = JSON.parse(localStorage.getItem("photos") || "[]");
+
+        data.push({
+          class: selectedClass,
+          name: name,
+          image: reader.result
+        });
+
+        localStorage.setItem("photos", JSON.stringify(data));
+
+        photoInput.value = "";
+        
+
+        loadPhotos();
+      };
+
+      reader.readAsDataURL(file);
+    });
+
+    classSelect.addEventListener("change", loadPhotos);
+
+  </script>
+
+</body>
+</html>
